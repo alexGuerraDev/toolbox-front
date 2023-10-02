@@ -1,46 +1,81 @@
-# Getting Started with Create React App and Redux
+# Toolbox Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+Este proyecto es una interfaz frontend para Toolbox, construida con React y Bootstrap.
 
-## Available Scripts
+## Requisitos previos
 
-In the project directory, you can run:
+- Tener instalado Node.js y npm.
+- Tener Docker instalado (si deseas ejecutar el proyecto con Docker).
 
-### `npm start`
+## Instrucciones para ejecución
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Usando Docker:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Construye la imagen de Docker**:
 
-### `npm test`
+```bash
+docker build -t toolbox-front .
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. **Ejecuta el contenedor**:
 
-### `npm run build`
+```bash
+docker run -p 3000:3000 --env-file .env toolbox-front
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Luego de estos pasos, el frontend estará disponible en `http://localhost:3000`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+NOTA: El archivo `.env` debe contener las variables de entorno necesarias para la correr el front. Puedes encontrar un ejemplo en el archivo `.env.example`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+NOTA: Si vas a correr tu contenedor y necesitas que tu API sea accedida por otro contenedor local debes crear una Red Docker primero y luego ejecutar el contenedor en esa red. Puedes encontrar más información sobre esto en la sección "Ejecutar la API en un una RED docker" de este `README`.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Usando npm:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. **Instala las dependencias**:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+2. **Ejecuta el proyecto**:
 
-## Learn More
+```bash
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+El frontend se lanzará y estará disponible en `http://localhost:3000`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Ejecutar la API en un una RED docker
+
+Si aún no tienes una red Docker para estos servicios, crea una:
+
+```bash
+docker network create network-toolbox
+```
+
+#### Ejecutar la API en un contenedor
+
+```bash
+docker run --network network-toolbox -p 3000:3000 --env-file .env --name contenedor-toolbox-front toolbox-front
+
+```
+
+La API ahora estará corriendo en `http://localhost:3000` y estará accesible dentro de la red Docker como `contenedor-toolbox-front`.
+
+## Scripts disponibles
+
+- `npm start`: Ejecuta la aplicación en modo de desarrollo.
+- `npm test`: Ejecuta los tests del proyecto.
+- `npm build`: Construye la aplicación para producción en la carpeta `build`.
+- `npm eject`: Si no estás satisfecho con la configuración de construcción y las opciones de herramientas, ¡puedes hacer un `eject` en cualquier momento!
+
+## Dependencias
+
+- React: ^18.2.0
+- Bootstrap: ^5.3.2
+- React-Bootstrap: ^2.9.0
+- Redux Toolkit: ^1.9.6
+- React-Redux: ^8.1.2
+
