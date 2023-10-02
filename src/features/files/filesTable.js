@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Spinner, Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFiles } from './filesSlice';
+import { getFiles, getFileList } from './filesSlice';
 
-const FilterForm = ({ fileName, setFileName, handleFilter }) => (
+
+const FilterForm = ({ selectedFile, availableFiles, handleSelection }) => (
   <Form className="mb-3 mt-3">
     <Row>
-      <Col xs={12} md={10}>
-        <Form.Control
-          type="text"
-          placeholder="Ingresar nombre de archivo"
-          value={fileName}
-          onChange={e => setFileName(e.target.value)}
-        />
-      </Col>
-      <Col xs={12} md={2} >
-        <Button variant="primary" onClick={handleFilter} block>Filtrar</Button>
+      <Col xs={12} md={12}>
+        <Form.Control as="select" value={selectedFile} onChange={e => handleSelection(e.target.value)}>
+          <option value="">Selecciona un archivo para filtrar</option>
+          {availableFiles.map(fileName => (
+            <option key={fileName} value={fileName}>
+              {fileName}
+            </option>
+          ))}
+        </Form.Control>
       </Col>
     </Row>
   </Form>
@@ -23,17 +23,21 @@ const FilterForm = ({ fileName, setFileName, handleFilter }) => (
 
 const FilesTable = () => {
   const dispatch = useDispatch();
-  const files = useSelector(state => state.files);
+  const files = useSelector(state => state.files.files);
+  const fileList = useSelector(state => state.files.fileList);
+
   const [fileName, setFileName] = useState("");
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
+    dispatch(getFileList());
     dispatch(getFiles());
   }, [dispatch]);
 
-  const handleFilter = () => {
-    setIsInitialLoad(false);  // set isInitialLoad to false
-    dispatch(getFiles(fileName || null));
+  const handleSelection = (selectedFile) => {
+    setIsInitialLoad(false);
+    dispatch(getFiles(selectedFile || null));
+    setFileName(selectedFile);
   };
 
   const CenteredSpinner = () => {
@@ -52,13 +56,21 @@ const FilesTable = () => {
           <CenteredSpinner />
         ) : (
           <Container>
-            <FilterForm fileName={fileName} setFileName={setFileName} handleFilter={handleFilter} />
+            <FilterForm
+              selectedFile={fileName}
+              availableFiles={fileList}
+              handleSelection={handleSelection}
+            />
             <p>No se encontró ningún archivo con el nombre {fileName}</p>
           </Container>
         )
       ) : (
         <Container>
-          <FilterForm fileName={fileName} setFileName={setFileName} handleFilter={handleFilter} />
+          <FilterForm
+            selectedFile={fileName}
+            availableFiles={fileList}
+            handleSelection={handleSelection}
+          />
           <div className="table-responsive">
             <Table striped bordered hover size="sm">
               <thead>
